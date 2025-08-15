@@ -4,19 +4,65 @@
   <meta charset="UTF-8">
   <title>WatchWala | Online Watch Store</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Bootstrap CDN for beautiful styling -->
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="icon" href="logo.png">
   <style>
     body {
       background: #f5f5f5;
     }
     .navbar {
-      background: #212529;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
     }
     .navbar-brand img {
       height: 40px;
       margin-right: 10px;
+      vertical-align: middle;
+    }
+    .menu-icon, .wishlist-icon, .cart-icon, .search-icon {
+      cursor: pointer;
+      font-size: 1.6rem;
+      margin-left: 18px;
+      color: #222;
+      transition: color 0.2s;
+    }
+    .menu-icon:hover, .wishlist-icon:hover, .cart-icon:hover, .search-icon:hover {
+      color: #e10000;
+    }
+    .offcanvas-end {
+      width: 75vw;
+      max-width: 350px;
+    }
+    .offcanvas-header {
+      border-bottom: 1px solid #eee;
+    }
+    .offcanvas-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    .offcanvas .btn-pro {
+      border: 1px solid #e10000;
+      color: #e10000;
+      font-weight: bold;
+      border-radius: 25px;
+      padding: 6px 20px;
+      background: none;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .offcanvas .btn-pro:hover {
+      background: #e10000;
+      color: #fff;
+      border: 1px solid #e10000;
     }
     .carousel-item img {
       height: 350px;
@@ -26,6 +72,8 @@
     }
     .card {
       margin-bottom: 30px;
+      position: relative;
+      overflow: visible;
     }
     .store-title {
       font-size: 2.5rem;
@@ -35,62 +83,140 @@
       font-weight: bold;
       letter-spacing: 2px;
     }
+    .wishlist-heart {
+      position: absolute;
+      top: 12px;
+      right: 15px;
+      font-size: 1.7rem;
+      color: #e10000;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      padding: 4px;
+      cursor: pointer;
+      z-index: 10;
+      transition: color 0.2s;
+    }
+    .wishlist-heart.active {
+      color: #e10000;
+      font-weight: bold;
+    }
+    @media (max-width: 991px) {
+      .navbar .desktop-menu {
+        display: none !important;
+      }
+      .navbar .mobile-icons {
+        display: flex !important;
+      }
+      .store-title {
+        font-size: 2rem;
+      }
+    }
+    @media (min-width: 992px) {
+      .navbar .desktop-menu {
+        display: flex !important;
+      }
+      .navbar .mobile-icons {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Responsive Navbar: Matches Image 1 (mobile) and Image 2 (desktop) -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-  <div class="container">
-    <!-- Logo (left) -->
-    <a class="navbar-brand fw-bold" href="#">
-      <img src="logo.png" alt="WatchWala Logo" style="height:40px; vertical-align:middle;">
-      WatchWala
-    </a>
-    <!-- Hamburger & icons (mobile) -->
-    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="d-lg-none d-flex align-items-center">
-      <a href="#" class="mx-2"><i class="bi bi-heart" style="font-size:1.5rem;"></i></a>
-      <a href="#" class="mx-2"><i class="bi bi-cart" style="font-size:1.5rem;"></i></a>
-      <a href="#" class="mx-2"><i class="bi bi-search" style="font-size:1.5rem;"></i></a>
-    </div>
-    <!-- Main Menu (center for desktop) -->
-    <div class="collapse navbar-collapse justify-content-center" id="mainNavbar">
-      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link fw-bold" href="#">HOME</a></li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle fw-bold" href="#" id="shopDropdown" data-bs-toggle="dropdown">SHOP</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">New Watch</a></li>
-            <li><a class="dropdown-item" href="#">Best Watch</a></li>
-            <li><a class="dropdown-item" href="#">Rado Watch</a></li>
-            <li><a class="dropdown-item" href="#">Rolex Watch</a></li>
-          </ul>
-        </li>
-        <li class="nav-item"><a class="nav-link fw-bold" href="#">BLOG</a></li>
-        <li class="nav-item"><a class="nav-link fw-bold" href="#">CONTACT</a></li>
-      </ul>
-      <!-- Right icons (desktop only) -->
-      <div class="d-none d-lg-flex align-items-center">
-        <a href="#" class="mx-2"><span>WISHLIST (0)</span></a>
-        <a href="#" class="mx-2"><span>CART (0)</span></a>
-        <a href="#" class="mx-2"><i class="bi bi-search" style="font-size:1.5rem;"></i></a>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+      <!-- Logo (left) -->
+      <a class="navbar-brand fw-bold" href="#">
+        <img src="logo.png" alt="WatchWala Logo">
+        WatchWala
+      </a>
+      <!-- Desktop Menu -->
+      <div class="desktop-menu justify-content-center align-items-center flex-grow-1">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link fw-bold" href="#">HOME</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle fw-bold" href="#" id="shopDropdown" data-bs-toggle="dropdown">SHOP</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">New Watch</a></li>
+              <li><a class="dropdown-item" href="#">Best Watch</a></li>
+              <li><a class="dropdown-item" href="#">Rado Watch</a></li>
+              <li><a class="dropdown-item" href="#">Rolex Watch</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link fw-bold" href="#">BLOG</a></li>
+          <li class="nav-item"><a class="nav-link fw-bold" href="#">CONTACT</a></li>
+          <li class="nav-item">
+            <button class="btn btn-pro" type="button">GET PRO</button>
+          </li>
+        </ul>
+        <!-- Right icons (desktop only) -->
+        <div class="d-flex align-items-center ms-3">
+          <span class="wishlist-icon" id="wishlistBtnDesktop"><i class="bi bi-heart"></i><span id="wishlistCountDesktop" class="badge bg-danger ms-1">0</span></span>
+          <span class="cart-icon" id="cartBtnDesktop"><i class="bi bi-cart"></i><span id="cartCountDesktop" class="badge bg-dark ms-1">0</span></span>
+          <span class="search-icon" id="searchBtnDesktop"><i class="bi bi-search"></i></span>
+        </div>
+      </div>
+      <!-- Mobile Icons -->
+      <div class="mobile-icons d-flex align-items-center ms-auto">
+        <span class="menu-icon" data-bs-toggle="offcanvas" data-bs-target="#mobileMenuOffcanvas"><i class="bi bi-list"></i></span>
+        <span class="wishlist-icon" id="wishlistBtnMobile"><i class="bi bi-heart"></i><span id="wishlistCountMobile" class="badge bg-danger ms-1">0</span></span>
+        <span class="cart-icon" id="cartBtnMobile"><i class="bi bi-cart"></i><span id="cartCountMobile" class="badge bg-dark ms-1">0</span></span>
+        <span class="search-icon" id="searchBtnMobile"><i class="bi bi-search"></i></span>
       </div>
     </div>
+  </nav>
+  <!-- Mobile Offcanvas Menu (Image 3 style) -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="mobileMenuOffcanvas">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">MENU</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="list-unstyled">
+        <li><a class="d-block py-2 fw-bold" href="#">HOME</a></li>
+        <li>
+          <div class="dropdown">
+            <a class="d-block py-2 fw-bold dropdown-toggle" href="#" id="shopDropdownMobile" data-bs-toggle="dropdown">SHOP</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">New Watch</a></li>
+              <li><a class="dropdown-item" href="#">Best Watch</a></li>
+              <li><a class="dropdown-item" href="#">Rado Watch</a></li>
+              <li><a class="dropdown-item" href="#">Rolex Watch</a></li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <div class="dropdown">
+            <a class="d-block py-2 fw-bold dropdown-toggle" href="#" id="blogDropdownMobile" data-bs-toggle="dropdown">BLOG</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Blog 1</a></li>
+              <li><a class="dropdown-item" href="#">Blog 2</a></li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <div class="dropdown">
+            <a class="d-block py-2 fw-bold dropdown-toggle" href="#" id="pagesDropdownMobile" data-bs-toggle="dropdown">PAGES</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">About</a></li>
+              <li><a class="dropdown-item" href="#">FAQ</a></li>
+            </ul>
+          </div>
+        </li>
+        <li><a class="d-block py-2 fw-bold" href="#">CONTACT</a></li>
+        <li>
+          <button class="btn btn-pro" type="button">GET PRO</button>
+        </li>
+      </ul>
+    </div>
   </div>
-</nav>
-<!-- Link Bootstrap Icons CDN for icons -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
   <!-- Store Title -->
   <div class="store-title">Welcome to WatchWala</div>
-
   <!-- Image Slider -->
   <div class="container mb-5">
     <div id="watchCarousel" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-inner">
-        <!-- Replace these images with your own product images -->
         <div class="carousel-item active">
           <img src="watch1.jpg" class="d-block w-100" alt="Watch 1">
         </div>
@@ -109,13 +235,13 @@
       </button>
     </div>
   </div>
-
-  <!-- Product Section (Sample Watches) -->
+  <!-- Product Section -->
   <div class="container">
     <div class="row">
       <!-- Watch Card 1 -->
       <div class="col-md-4">
         <div class="card">
+          <span class="wishlist-heart" onclick="toggleWishlist(this, 'Titan Classic')" title="Add to Wishlist"><i class="bi bi-heart"></i></span>
           <img src="watch1.jpg" class="card-img-top" alt="New Watch">
           <div class="card-body">
             <h5 class="card-title">Titan Classic</h5>
@@ -129,6 +255,7 @@
       <!-- Watch Card 2 -->
       <div class="col-md-4">
         <div class="card">
+          <span class="wishlist-heart" onclick="toggleWishlist(this, 'Casio Digital')" title="Add to Wishlist"><i class="bi bi-heart"></i></span>
           <img src="watch2.jpg" class="card-img-top" alt="Best Watch">
           <div class="card-body">
             <h5 class="card-title">Casio Digital</h5>
@@ -142,6 +269,7 @@
       <!-- Watch Card 3 -->
       <div class="col-md-4">
         <div class="card">
+          <span class="wishlist-heart" onclick="toggleWishlist(this, 'Rolex Oyster')" title="Add to Wishlist"><i class="bi bi-heart"></i></span>
           <img src="watch3.jpg" class="card-img-top" alt="Rolex Watch">
           <div class="card-body">
             <h5 class="card-title">Rolex Oyster</h5>
@@ -154,40 +282,70 @@
       </div>
     </div>
   </div>
-
-  <!-- Cart Modal (Basic JavaScript Cart) -->
+  <!-- Wishlist Modal -->
+  <div class="modal fade" id="wishlistModal" tabindex="-1" aria-labelledby="wishlistModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="wishlistModalLabel">Your Wishlist</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="wishlistContent">
+          <!-- Wishlist items will be added here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" onclick="clearWishlist()">Clear Wishlist</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Cart Modal -->
   <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="cartModalLabel">Your Cart</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body" id="cartContent">
           <!-- Cart items will be added here -->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-success" onclick="checkout()">Checkout</button>
+          <button type="button" class="btn btn-danger" onclick="clearCart()">Clear Cart</button>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- Floating Cart Button -->
-  <button type="button" class="btn btn-warning position-fixed" style="bottom:40px; right:40px; z-index:999;" data-bs-toggle="modal" data-bs-target="#cartModal">
-    🛒 Cart <span id="cartCount" class="badge bg-dark">0</span>
-  </button>
-
-  <!-- Bootstrap JS and Popper.js -->
+  <!-- Search Modal -->
+  <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="searchModalLabel">Search Watches</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" id="searchInput" class="form-control" placeholder="Type to search..." oninput="searchProducts()">
+          <div id="searchResults" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Basic Cart Functionality
+    // Cart functionality
     let cart = [];
     function addToCart(product) {
       cart.push(product);
-      document.getElementById('cartCount').textContent = cart.length;
-      alert(product + " added to cart!");
+      updateCartCount();
       updateCartContent();
+      alert(product + " added to cart!");
+    }
+    function updateCartCount() {
+      document.getElementById('cartCountDesktop').textContent = cart.length;
+      document.getElementById('cartCountMobile').textContent = cart.length;
     }
     function updateCartContent() {
       let cartContent = document.getElementById('cartContent');
@@ -200,15 +358,101 @@
         });
       }
     }
+    function clearCart() {
+      cart = [];
+      updateCartCount();
+      updateCartContent();
+    }
     function checkout() {
       if(cart.length === 0){
         alert("Your cart is empty!");
         return;
       }
-      // For demo: redirect to WhatsApp with cart details
       let message = "I want to buy: " + cart.join(", ");
-      window.open("https://wa.me/8077898483?text=" + encodeURIComponent(message));
+      window.open("https://wa.me/918077898483?text=" + encodeURIComponent(message));
     }
+    // Wishlist functionality
+    let wishlist = [];
+    function toggleWishlist(el, product) {
+      if (wishlist.includes(product)) {
+        wishlist = wishlist.filter(item => item !== product);
+        el.classList.remove('active');
+      } else {
+        wishlist.push(product);
+        el.classList.add('active');
+      }
+      updateWishlistCount();
+      updateWishlistContent();
+    }
+    function updateWishlistCount() {
+      document.getElementById('wishlistCountDesktop').textContent = wishlist.length;
+      document.getElementById('wishlistCountMobile').textContent = wishlist.length;
+    }
+    function updateWishlistContent() {
+      let wishlistContent = document.getElementById('wishlistContent');
+      wishlistContent.innerHTML = "";
+      if (wishlist.length === 0) {
+        wishlistContent.innerHTML = "<p>Your wishlist is empty.</p>";
+      } else {
+        wishlist.forEach((item, idx) => {
+          wishlistContent.innerHTML += `<div>${idx+1}. ${item}</div>`;
+        });
+      }
+    }
+    function clearWishlist() {
+      wishlist = [];
+      updateWishlistCount();
+      updateWishlistContent();
+      // Remove heart active from all cards
+      document.querySelectorAll('.wishlist-heart').forEach(el => el.classList.remove('active'));
+    }
+    // Search functionality
+    function openSearchModal() {
+      var searchModal = new bootstrap.Modal(document.getElementById('searchModal'));
+      searchModal.show();
+      document.getElementById('searchInput').focus();
+    }
+    const products = [
+      { name: "Titan Classic", desc: "Elegant analog watch, leather strap, unisex." },
+      { name: "Casio Digital", desc: "Waterproof, metal strap, sporty style." },
+      { name: "Rolex Oyster", desc: "Luxury classic, stainless steel, iconic design." }
+    ];
+    function searchProducts() {
+      let query = document.getElementById('searchInput').value.toLowerCase();
+      let results = products.filter(p => p.name.toLowerCase().includes(query) || p.desc.toLowerCase().includes(query));
+      let resultsDiv = document.getElementById('searchResults');
+      if (results.length === 0) {
+        resultsDiv.innerHTML = "<p>No watches found.</p>";
+      } else {
+        resultsDiv.innerHTML = results.map(p => `<div><strong>${p.name}</strong>: ${p.desc}</div>`).join('');
+      }
+    }
+    // Event Listeners for icons
+    document.getElementById('cartBtnDesktop').onclick = function() {
+      var cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
+      cartModal.show();
+      updateCartContent();
+    };
+    document.getElementById('cartBtnMobile').onclick = function() {
+      var cartModal = new bootstrap.Modal(document.getElementById('cartModal'));
+      cartModal.show();
+      updateCartContent();
+    };
+    document.getElementById('wishlistBtnDesktop').onclick = function() {
+      var wishlistModal = new bootstrap.Modal(document.getElementById('wishlistModal'));
+      wishlistModal.show();
+      updateWishlistContent();
+    };
+    document.getElementById('wishlistBtnMobile').onclick = function() {
+      var wishlistModal = new bootstrap.Modal(document.getElementById('wishlistModal'));
+      wishlistModal.show();
+      updateWishlistContent();
+    };
+    document.getElementById('searchBtnDesktop').onclick = openSearchModal;
+    document.getElementById('searchBtnMobile').onclick = openSearchModal;
+    // Initial counts
+    updateCartCount();
+    updateWishlistCount();
   </script>
 </body>
 </html>
